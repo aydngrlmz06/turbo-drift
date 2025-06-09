@@ -1,7 +1,7 @@
-{\rtf1\ansi\deff0\nouicompat{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fnil\fcharset238 Calibri;}{\f2\fnil\fcharset1 Segoe UI Symbol;}}
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat{\fonttbl{\f0\fnil\fcharset162 Calibri;}{\f1\fnil\fcharset238 Calibri;}{\f2\fnil\fcharset0 Calibri;}{\f3\fnil\fcharset1 Segoe UI Symbol;}}
 {\colortbl ;\red0\green0\blue255;}
 {\*\generator Riched20 10.0.19041}\viewkind4\uc1 
-\pard\sa200\sl276\slmult1\f0\fs22\lang31 <!DOCTYPE html>\par
+\pard\sa200\sl276\slmult1\f0\fs22\lang1055 <!DOCTYPE html>\par
 <html lang="en">\par
 <head>\par
   <meta charset="UTF-8" />\par
@@ -84,7 +84,7 @@
 </head>\par
 <body>\par
   <div id="ui" style="display: none;">\par
-    <div>S\f0\lang1033\'fcre: <span id="timer">0.0</span>s</div>\par
+    <div>S\f2\lang1033\'fcre: <span id="timer">0.0</span>s</div>\par
     <div>Tur: <span id="laps">0</span></div>\par
   </div>\par
   <select id="trackSelect">\par
@@ -98,18 +98,18 @@
     <option value="green">Ye\'bail Spor</option>\par
   </select>\par
   <button id="startBtn">Yar\u305?\'baa Ba\'bala</button>\par
-  <button id="screenshotBtn">G\f0\'f6rsel Al</button>\par
+  <button id="screenshotBtn">G\f2\'f6rsel Al</button>\par
 \par
   <div id="volumeControl">\par
-    <button id="muteBtn">\f2\u-10179?\u-8950?\f0 </button>\par
+    <button id="muteBtn">\f3\u-10179?\u-8950?\f2 </button>\par
     <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">\par
   </div>\par
 \par
   <audio id="bgMusic" loop autoplay></audio>\par
 \par
   <script type="module">\par
-    import * as THREE from '{{\field{\*\fldinst{HYPERLINK https://unpkg.com/three@0.160.1/build/three.module.js }}{\fldrslt{https://unpkg.com/three@0.160.1/build/three.module.js\ul0\cf0}}}}\f0\fs22 ';\par
-    import \{ GLTFLoader \} from '{{\field{\*\fldinst{HYPERLINK https://unpkg.com/three@0.160.1/examples/jsm/loaders/GLTFLoader.js }}{\fldrslt{https://unpkg.com/three@0.160.1/examples/jsm/loaders/GLTFLoader.js\ul0\cf0}}}}\f0\fs22 ';\par
+    import * as THREE from '{{\field{\*\fldinst{HYPERLINK https://unpkg.com/three@0.160.1/build/three.module.js }}{\fldrslt{https://unpkg.com/three@0.160.1/build/three.module.js\ul0\cf0}}}}\f2\fs22 ';\par
+    import \{ GLTFLoader \} from '{{\field{\*\fldinst{HYPERLINK https://unpkg.com/three@0.160.1/examples/jsm/loaders/GLTFLoader.js }}{\fldrslt{https://unpkg.com/three@0.160.1/examples/jsm/loaders/GLTFLoader.js\ul0\cf0}}}}\f2\fs22 ';\par
 \par
     let started = false;\par
     let time = 0, laps = 0;\par
@@ -129,18 +129,18 @@
 \par
     volumeSlider.addEventListener('input', () => \{\par
       bgMusic.volume = volumeSlider.value;\par
-      muteBtn.textContent = bgMusic.volume === 0 ? '\f2\u-10179?\u-8953?\f0 ' : '\f2\u-10179?\u-8950?\f0 ';\par
+      muteBtn.textContent = bgMusic.volume === 0 ? '\f3\u-10179?\u-8953?\f2 ' : '\f3\u-10179?\u-8950?\f2 ';\par
     \});\par
 \par
     muteBtn.addEventListener('click', () => \{\par
       if (bgMusic.volume > 0) \{\par
         bgMusic.volume = 0;\par
         volumeSlider.value = 0;\par
-        muteBtn.textContent = '\f2\u-10179?\u-8953?\f0 ';\par
+        muteBtn.textContent = '\f3\u-10179?\u-8953?\f2 ';\par
       \} else \{\par
         bgMusic.volume = 1;\par
         volumeSlider.value = 1;\par
-        muteBtn.textContent = '\f2\u-10179?\u-8950?\f0 ';\par
+        muteBtn.textContent = '\f3\u-10179?\u-8950?\f2 ';\par
       \}\par
     \});\par
 \par
@@ -177,9 +177,9 @@
     let car;\par
 \par
     const carModels = \{\par
-      red: '{{\field{\*\fldinst{HYPERLINK https://turbo-drift-game-assets.s3.amazonaws.com/models/red_car.glb }}{\fldrslt{https://turbo-drift-game-assets.s3.amazonaws.com/models/red_car.glb\ul0\cf0}}}}\f0\fs22 ',\par
-      blue: '{{\field{\*\fldinst{HYPERLINK https://turbo-drift-game-assets.s3.amazonaws.com/models/blue_car.glb }}{\fldrslt{https://turbo-drift-game-assets.s3.amazonaws.com/models/blue_car.glb\ul0\cf0}}}}\f0\fs22 ',\par
-      green: '{{\field{\*\fldinst{HYPERLINK https://turbo-drift-game-assets.s3.amazonaws.com/models/green_car.glb }}{\fldrslt{https://turbo-drift-game-assets.s3.amazonaws.com/models/green_car.glb\ul0\cf0}}}}\f0\fs22 '\par
+      red: '{{\field{\*\fldinst{HYPERLINK https://turbo-drift-game-assets.s3.amazonaws.com/models/red_car.glb }}{\fldrslt{https://turbo-drift-game-assets.s3.amazonaws.com/models/red_car.glb\ul0\cf0}}}}\f2\fs22 ',\par
+      blue: '{{\field{\*\fldinst{HYPERLINK https://turbo-drift-game-assets.s3.amazonaws.com/models/blue_car.glb }}{\fldrslt{https://turbo-drift-game-assets.s3.amazonaws.com/models/blue_car.glb\ul0\cf0}}}}\f2\fs22 ',\par
+      green: '{{\field{\*\fldinst{HYPERLINK https://turbo-drift-game-assets.s3.amazonaws.com/models/green_car.glb }}{\fldrslt{https://turbo-drift-game-assets.s3.amazonaws.com/models/green_car.glb\ul0\cf0}}}}\f2\fs22 '\par
     \};\par
 \par
     function loadCar(colorKey) \{\par
