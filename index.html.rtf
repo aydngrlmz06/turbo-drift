@@ -1,0 +1,274 @@
+{\rtf1\ansi\deff0\nouicompat{\fonttbl{\f0\fnil\fcharset0 Calibri;}{\f1\fnil\fcharset238 Calibri;}{\f2\fnil\fcharset1 Segoe UI Symbol;}}
+{\colortbl ;\red0\green0\blue255;}
+{\*\generator Riched20 10.0.19041}\viewkind4\uc1 
+\pard\sa200\sl276\slmult1\f0\fs22\lang31 <!DOCTYPE html>\par
+<html lang="en">\par
+<head>\par
+  <meta charset="UTF-8" />\par
+  <title>Turbo Drift - 3D Araba Yar\f1\u305?\'ba\u305?</title>\par
+  <style>\par
+    body \{ margin: 0; overflow: hidden; font-family: sans-serif; \}\par
+    canvas \{ display: block; \}\par
+    #ui \{\par
+      position: absolute;\par
+      top: 20px;\par
+      left: 20px;\par
+      color: white;\par
+      background: rgba(0, 0, 0, 0.5);\par
+      padding: 10px;\par
+      border-radius: 8px;\par
+    \}\par
+    #startBtn \{\par
+      position: absolute;\par
+      top: 50%;\par
+      left: 50%;\par
+      transform: translate(-50%, -50%);\par
+      padding: 20px 40px;\par
+      font-size: 20px;\par
+      background: #ff0000;\par
+      color: white;\par
+      border: none;\par
+      border-radius: 10px;\par
+      cursor: pointer;\par
+      z-index: 2;\par
+    \}\par
+    #carSelect, #trackSelect \{\par
+      position: absolute;\par
+      top: 50%;\par
+      left: 50%;\par
+      transform: translate(-50%, -50%) translateY(-80px);\par
+      z-index: 3;\par
+      background: rgba(0,0,0,0.7);\par
+      color: white;\par
+      padding: 10px;\par
+      border-radius: 8px;\par
+    \}\par
+    #trackSelect \{\par
+      transform: translate(-50%, -50%) translateY(-140px);\par
+    \}\par
+    #screenshotBtn \{\par
+      position: absolute;\par
+      bottom: 20px;\par
+      left: 20px;\par
+      padding: 10px 20px;\par
+      font-size: 16px;\par
+      background: #007bff;\par
+      color: white;\par
+      border: none;\par
+      border-radius: 8px;\par
+      cursor: pointer;\par
+      z-index: 2;\par
+    \}\par
+    #volumeControl \{\par
+      position: absolute;\par
+      bottom: 20px;\par
+      right: 20px;\par
+      z-index: 2;\par
+      display: flex;\par
+      align-items: center;\par
+      background: rgba(0,0,0,0.6);\par
+      padding: 10px;\par
+      border-radius: 10px;\par
+    \}\par
+    #volumeSlider \{\par
+      margin-left: 10px;\par
+    \}\par
+    #muteBtn \{\par
+      background: none;\par
+      border: none;\par
+      color: white;\par
+      font-size: 20px;\par
+      cursor: pointer;\par
+    \}\par
+  </style>\par
+</head>\par
+<body>\par
+  <div id="ui" style="display: none;">\par
+    <div>S\f0\lang1033\'fcre: <span id="timer">0.0</span>s</div>\par
+    <div>Tur: <span id="laps">0</span></div>\par
+  </div>\par
+  <select id="trackSelect">\par
+    <option value="istanbul">\f1\u304?stanbul</option>\par
+    <option value="ankara">Ankara</option>\par
+    <option value="izmir">\u304?zmir</option>\par
+  </select>\par
+  <select id="carSelect">\par
+    <option value="red">K\u305?rm\u305?z\u305? Spor</option>\par
+    <option value="blue">Mavi Spor</option>\par
+    <option value="green">Ye\'bail Spor</option>\par
+  </select>\par
+  <button id="startBtn">Yar\u305?\'baa Ba\'bala</button>\par
+  <button id="screenshotBtn">G\f0\'f6rsel Al</button>\par
+\par
+  <div id="volumeControl">\par
+    <button id="muteBtn">\f2\u-10179?\u-8950?\f0 </button>\par
+    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">\par
+  </div>\par
+\par
+  <audio id="bgMusic" loop autoplay></audio>\par
+\par
+  <script type="module">\par
+    import * as THREE from '{{\field{\*\fldinst{HYPERLINK https://unpkg.com/three@0.160.1/build/three.module.js }}{\fldrslt{https://unpkg.com/three@0.160.1/build/three.module.js\ul0\cf0}}}}\f0\fs22 ';\par
+    import \{ GLTFLoader \} from '{{\field{\*\fldinst{HYPERLINK https://unpkg.com/three@0.160.1/examples/jsm/loaders/GLTFLoader.js }}{\fldrslt{https://unpkg.com/three@0.160.1/examples/jsm/loaders/GLTFLoader.js\ul0\cf0}}}}\f0\fs22 ';\par
+\par
+    let started = false;\par
+    let time = 0, laps = 0;\par
+    let startTime = 0;\par
+    let checkpointPassed = false;\par
+\par
+    const ui = document.getElementById('ui');\par
+    const timerEl = document.getElementById('timer');\par
+    const lapsEl = document.getElementById('laps');\par
+    const startBtn = document.getElementById('startBtn');\par
+    const carSelect = document.getElementById('carSelect');\par
+    const trackSelect = document.getElementById('trackSelect');\par
+    const screenshotBtn = document.getElementById('screenshotBtn');\par
+    const bgMusic = document.getElementById('bgMusic');\par
+    const muteBtn = document.getElementById('muteBtn');\par
+    const volumeSlider = document.getElementById('volumeSlider');\par
+\par
+    volumeSlider.addEventListener('input', () => \{\par
+      bgMusic.volume = volumeSlider.value;\par
+      muteBtn.textContent = bgMusic.volume === 0 ? '\f2\u-10179?\u-8953?\f0 ' : '\f2\u-10179?\u-8950?\f0 ';\par
+    \});\par
+\par
+    muteBtn.addEventListener('click', () => \{\par
+      if (bgMusic.volume > 0) \{\par
+        bgMusic.volume = 0;\par
+        volumeSlider.value = 0;\par
+        muteBtn.textContent = '\f2\u-10179?\u-8953?\f0 ';\par
+      \} else \{\par
+        bgMusic.volume = 1;\par
+        volumeSlider.value = 1;\par
+        muteBtn.textContent = '\f2\u-10179?\u-8950?\f0 ';\par
+      \}\par
+    \});\par
+\par
+    const scene = new THREE.Scene();\par
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);\par
+    const renderer = new THREE.WebGLRenderer();\par
+    renderer.setSize(window.innerWidth, window.innerHeight);\par
+    document.body.appendChild(renderer.domElement);\par
+\par
+    const light = new THREE.DirectionalLight(0xffffff, 1);\par
+    light.position.set(5, 10, 7.5);\par
+    scene.add(light);\par
+\par
+    const groundGeometry = new THREE.PlaneGeometry(100, 100);\par
+    const groundMaterial = new THREE.MeshPhongMaterial(\{ color: 0x333333 \});\par
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);\par
+    ground.rotation.x = -Math.PI / 2;\par
+    scene.add(ground);\par
+\par
+    const textureLoader = new THREE.TextureLoader();\par
+\par
+    function loadTrackTexture(city) \{\par
+      return textureLoader.load(`https://turbo-drift-game-assets.s3.amazonaws.com/textures/$\{city\}.jpg`);\par
+    \}\par
+\par
+    const track = new THREE.Mesh(\par
+      new THREE.RingGeometry(20, 30, 64, 1),\par
+      new THREE.MeshBasicMaterial(\{ side: THREE.DoubleSide \})\par
+    );\par
+    track.rotation.x = -Math.PI / 2;\par
+    scene.add(track);\par
+\par
+    const loader = new GLTFLoader();\par
+    let car;\par
+\par
+    const carModels = \{\par
+      red: '{{\field{\*\fldinst{HYPERLINK https://turbo-drift-game-assets.s3.amazonaws.com/models/red_car.glb }}{\fldrslt{https://turbo-drift-game-assets.s3.amazonaws.com/models/red_car.glb\ul0\cf0}}}}\f0\fs22 ',\par
+      blue: '{{\field{\*\fldinst{HYPERLINK https://turbo-drift-game-assets.s3.amazonaws.com/models/blue_car.glb }}{\fldrslt{https://turbo-drift-game-assets.s3.amazonaws.com/models/blue_car.glb\ul0\cf0}}}}\f0\fs22 ',\par
+      green: '{{\field{\*\fldinst{HYPERLINK https://turbo-drift-game-assets.s3.amazonaws.com/models/green_car.glb }}{\fldrslt{https://turbo-drift-game-assets.s3.amazonaws.com/models/green_car.glb\ul0\cf0}}}}\f0\fs22 '\par
+    \};\par
+\par
+    function loadCar(colorKey) \{\par
+      return new Promise((resolve, reject) => \{\par
+        loader.load(carModels[colorKey], (gltf) => \{\par
+          const model = gltf.scene;\par
+          model.scale.set(1.2, 1.2, 1.2);\par
+          model.position.set(0, 0, 25);\par
+          scene.add(model);\par
+          resolve(model);\par
+        \}, undefined, reject);\par
+      \});\par
+    \}\par
+\par
+    startBtn.onclick = async () => \{\par
+      const selectedCar = carSelect.value;\par
+      const selectedTrack = trackSelect.value;\par
+\par
+      track.material.map = loadTrackTexture(selectedTrack);\par
+      track.material.needsUpdate = true;\par
+\par
+      if (!car) car = await loadCar(selectedCar);\par
+\par
+      started = true;\par
+      startTime = performance.now();\par
+      startBtn.style.display = 'none';\par
+      carSelect.style.display = 'none';\par
+      trackSelect.style.display = 'none';\par
+      ui.style.display = 'block';\par
+\par
+      bgMusic.src = `https://turbo-drift-game-assets.s3.amazonaws.com/music/$\{selectedTrack\}.mp3`;\par
+      bgMusic.play();\par
+    \};\par
+\par
+    screenshotBtn.onclick = () => \{\par
+      const imgData = renderer.domElement.toDataURL('image/png');\par
+      const a = document.createElement('a');\par
+      a.href = imgData;\par
+      a.download = 'arac-goruntusu.png';\par
+      a.click();\par
+    \};\par
+\par
+    const finishLine = new THREE.Mesh(\par
+      new THREE.BoxGeometry(5, 0.1, 0.5),\par
+      new THREE.MeshBasicMaterial(\{ color: 0xffff00 \})\par
+    );\par
+    finishLine.position.set(0, 0.05, 25);\par
+    scene.add(finishLine);\par
+\par
+    camera.position.set(0, 10, 15);\par
+\par
+    const keys = \{\};\par
+    document.addEventListener('keydown', (e) => keys[e.key.toLowerCase()] = true);\par
+    document.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);\par
+\par
+    function animate() \{\par
+      requestAnimationFrame(animate);\par
+\par
+      if (started && car) \{\par
+        const now = performance.now();\par
+        time = ((now - startTime) / 1000).toFixed(1);\par
+        timerEl.textContent = time;\par
+\par
+        if (keys['w']) car.position.z -= 0.3;\par
+        if (keys['s']) car.position.z += 0.3;\par
+        if (keys['a']) car.position.x -= 0.3;\par
+        if (keys['d']) car.position.x += 0.3;\par
+\par
+        camera.position.x = car.position.x;\par
+        camera.position.z = car.position.z + 10;\par
+        camera.lookAt(car.position);\par
+\par
+        const distToFinish = car.position.distanceTo(finishLine.position);\par
+        if (distToFinish < 3 && !checkpointPassed) \{\par
+          laps++;\par
+          lapsEl.textContent = laps;\par
+          startTime = now;\par
+          checkpointPassed = true;\par
+        \} else if (distToFinish > 5) \{\par
+          checkpointPassed = false;\par
+        \}\par
+      \}\par
+\par
+      renderer.render(scene, camera);\par
+    \}\par
+\par
+    animate();\par
+  </script>\par
+</body>\par
+</html>\lang31\par
+}
+ 
